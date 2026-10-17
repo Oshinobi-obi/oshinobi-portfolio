@@ -1,4 +1,4 @@
-# Oshinobi — Developer Portfolio
+# Oshinobi Portfolio
 
 A dark, neon-accented personal portfolio with real-time 3D, built with **Vite + vanilla JS**, **Three.js**, and **GSAP ScrollTrigger**. It builds to a static site, so you can deploy it to GitHub Pages, Vercel, or Netlify.
 
