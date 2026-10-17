@@ -1,5 +1,3 @@
-// Scroll-triggered reveals with GSAP + ScrollTrigger.
-// With prefers-reduced-motion everything is simply shown, no animation.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { env } from './env.js';
@@ -9,7 +7,6 @@ gsap.registerPlugin(ScrollTrigger);
 export function initReveals() {
   if (env.reducedMotion) return;
 
-  // Hero intro
   gsap.from('[data-hero-item]', {
     y: 40,
     opacity: 0,
@@ -19,7 +16,6 @@ export function initReveals() {
     delay: 0.15,
   });
 
-  // Hero content drifts up and fades as you scroll away
   gsap.to('[data-hero-content]', {
     yPercent: -18,
     opacity: 0,
@@ -27,10 +23,8 @@ export function initReveals() {
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
   });
 
-  // Generic fade / rise
   revealBatch('[data-reveal]', { y: 48, opacity: 0, duration: 0.9, ease: 'power3.out' });
 
-  // Project cards flip in with 3D perspective
   revealBatch('[data-flip]', {
     opacity: 0,
     rotationX: -65,
@@ -44,7 +38,6 @@ export function initReveals() {
     stagger: 0.12,
   });
 
-  // Section numbers parallax
   gsap.utils.toArray('.section__num').forEach((el) => {
     gsap.fromTo(
       el,
@@ -54,12 +47,6 @@ export function initReveals() {
   });
 }
 
-/**
- * Reveal elements as they enter the viewport. Safe to call for late-added
- * content. The observer's top margin is huge, so anything already scrolled
- * past (deep links, restored scroll on reload) counts as "in view" and is
- * revealed immediately instead of staying hidden.
- */
 export function revealBatch(selector, from = { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }) {
   if (env.reducedMotion) return;
   const { duration = 0.8, ease = 'power3.out', stagger = 0.08, ...fromProps } = from;
