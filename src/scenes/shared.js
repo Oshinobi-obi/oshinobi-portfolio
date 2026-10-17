@@ -1,5 +1,3 @@
-// Shapes and camera constants shared by the hero, the scroll morph, and the
-// language sphere, so particles land exactly where the 3D objects are.
 import * as THREE from 'three';
 
 export const HERO_CAMERA_Z = 9;
@@ -7,12 +5,10 @@ export const HERO_FOV = 45;
 export const GLOBE_RADIUS = 1.45;
 export const LANG_FOV = 40;
 
-/** Language-sphere camera distance (pulled back on narrow canvases). */
 export function languageCameraZ(aspect) {
   return aspect < 1 ? 8.2 / Math.max(aspect, 0.65) : 8.2;
 }
 
-/** The hero's low-poly crystal: an icosahedron with jittered vertices. */
 export function makeCrystalGeometry() {
   const geo = new THREE.IcosahedronGeometry(1.5, 1);
   const pos = geo.attributes.position;
@@ -27,7 +23,6 @@ export function makeCrystalGeometry() {
   return geo;
 }
 
-/** Random points spread along a geometry's edges (reads as a wireframe). */
 export function samplePointsOnEdges(edgeGeometry, count, jitter = 0) {
   const p = edgeGeometry.attributes.position;
   const segs = p.count / 2;
@@ -46,7 +41,6 @@ export function samplePointsOnEdges(edgeGeometry, count, jitter = 0) {
   return out;
 }
 
-/** Random points on a geometry's triangle faces. */
 export function samplePointsOnFaces(geometry, count) {
   const g = geometry.index ? geometry.toNonIndexed() : geometry;
   const p = g.attributes.position;
