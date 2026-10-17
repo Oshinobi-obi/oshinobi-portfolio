@@ -1,4 +1,3 @@
-// GitHub Linguist colors for the languages most likely to appear.
 export const LANGUAGE_COLORS = {
   'C#': '#178600',
   HTML: '#e34c26',
