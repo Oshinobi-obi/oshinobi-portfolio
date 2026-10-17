@@ -1,4 +1,3 @@
-// Shared renderer / camera / loop plumbing for every Three.js scene.
 import * as THREE from 'three';
 import { env, onReducedMotionChange } from '../lib/env.js';
 
@@ -30,9 +29,7 @@ export function createSceneBase(container, { fov = 45, z = 8 } = {}) {
     height: 1,
     onResize: (cb) => resizeCbs.push(cb),
     setUpdate: (fn) => (update = fn),
-    /** Replace the default draw call (e.g. with a post-processing composer). */
     setRender: (fn) => (draw = fn),
-    /** Calls the scene's update(dt, elapsed) then draws one frame. */
     renderOnce() {
       const now = performance.now();
       const dt = Math.min((now - last) / 1000, 0.05);
@@ -41,7 +38,6 @@ export function createSceneBase(container, { fov = 45, z = 8 } = {}) {
       update(dt, elapsed);
       draw();
     },
-    /** Start the loop. With reduced motion we only draw a single still frame. */
     start() {
       if (running) return;
       if (env.reducedMotion) return api.renderOnce();
@@ -102,7 +98,7 @@ export function createSceneBase(container, { fov = 45, z = 8 } = {}) {
 }
 
 let dotTexture = null;
-/** Soft round sprite used for particles (cached). */
+
 export function softDotTexture() {
   if (dotTexture) return dotTexture;
   const c = document.createElement('canvas');
