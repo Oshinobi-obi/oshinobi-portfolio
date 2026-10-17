@@ -1,10 +1,3 @@
-// Scroll morph: the hero crystal bursts into particles that swirl down the
-// page and re-form as the wireframe globe in "Languages & Tech".
-//
-// It's a fixed, click-through overlay canvas. Each particle has a point on
-// the crystal (shape A) and a point on the globe (shape B). Every frame we
-// work out where both objects currently sit on screen, and the vertex shader
-// blends between them by scroll progress, adding a swirl mid-flight.
 import * as THREE from 'three';
 import { env, onReducedMotionChange } from '../lib/env.js';
 import { morphState } from '../lib/morphState.js';
@@ -17,34 +10,32 @@ import {
   samplePointsOnFaces,
 } from './shared.js';
 
-const vertexShader = /* glsl */ `
+const vertexShader = `
   attribute vec3 aA;
   attribute vec3 aB;
   attribute float aRand;
-  uniform vec2 uRes;       // viewport size in CSS px
-  uniform vec4 uA;         // crystal: center x, y (px), px per unit, camera depth
-  uniform vec4 uB;         // globe:   center x, y (px), px per unit, camera depth
-  uniform vec2 uRotA;      // crystal rotation (y, x)
-  uniform vec2 uRotB;      // globe rotation (y, x)
-  uniform float uP;        // scroll progress 0..1
-  uniform float uT;        // time
-  uniform float uSwirl;    // swirl radius in px
+  uniform vec2 uRes;
+  uniform vec4 uA;
+  uniform vec4 uB;
+  uniform vec2 uRotA;
+  uniform vec2 uRotB;
+  uniform float uP;
+  uniform float uT;
+  uniform float uSwirl;
   uniform float uDpr;
-  uniform float uMidAlpha; // dimmer mid-flight so text underneath stays readable
+  uniform float uMidAlpha;
   varying float vAlpha;
   varying vec3 vColor;
 
   mat3 rotY(float a) { float c = cos(a), s = sin(a); return mat3(c, 0., -s, 0., 1., 0., s, 0., c); }
   mat3 rotX(float a) { float c = cos(a), s = sin(a); return mat3(1., 0., 0., 0., c, s, 0., -s, c); }
 
-  // Simple perspective projection of a local point onto the screen.
   vec2 toScreen(vec3 p, vec4 o, out float persp) {
     persp = o.w / max(o.w - p.z, 0.1);
     return o.xy + vec2(p.x, -p.y) * o.z * persp;
   }
 
   void main() {
-    // Stagger each particle's departure so they peel off, not jump at once.
     float t = clamp((uP - aRand * 0.22) / 0.78, 0.0, 1.0);
     float e = t * t * (3.0 - 2.0 * t);
 
@@ -53,7 +44,6 @@ const vertexShader = /* glsl */ `
     vec2 sb = toScreen(rotX(uRotB.y) * rotY(uRotB.x - (1.0 - e) * 2.0) * aB, uB, pb);
     vec2 s = mix(sa, sb, e);
 
-    // Swirl outward mid-flight, like a galaxy arm.
     float mid = sin(e * 3.14159);
     float ang = aRand * 6.2831 + uT * (0.4 + aRand * 0.6) + e * 6.0;
     s += vec2(cos(ang), sin(ang) * 0.6) * mid * uSwirl * (0.35 + aRand);
@@ -64,14 +54,13 @@ const vertexShader = /* glsl */ `
     float persp = mix(pa, pb, e);
     gl_PointSize = (1.4 + aRand * 2.4) * persp * (1.0 + mid * 0.8) * uDpr;
 
-    // Fade in as the crystal dissolves; fade out as the globe takes over.
     vAlpha = smoothstep(0.0, 0.1, uP) * (1.0 - smoothstep(0.9, 1.0, uP)) * (0.55 + 0.45 * persp) * mix(1.0, uMidAlpha, mid);
     vColor = mix(vec3(0.133, 0.827, 0.933), vec3(0.655, 0.545, 0.98), fract(aRand * 7.31));
     vColor = mix(vColor, vec3(1.0), mid * 0.25 * step(0.85, aRand));
   }
 `;
 
-const fragmentShader = /* glsl */ `
+const fragmentShader = `
   varying float vAlpha;
   varying vec3 vColor;
   void main() {
@@ -95,14 +84,12 @@ export function createMorph({ heroEl, sphereEl, canvasEl }) {
   canvas.setAttribute('aria-hidden', 'true');
   document.body.appendChild(canvas);
 
-  // Shape A: the crystal — mostly along its edges, some across its faces.
   const crystal = makeCrystalGeometry();
   const nEdges = Math.floor(count * 0.6);
   const a = new Float32Array(count * 3);
   a.set(samplePointsOnEdges(new THREE.EdgesGeometry(crystal), nEdges, 0.03), 0);
   a.set(samplePointsOnFaces(crystal, count - nEdges), nEdges * 3);
 
-  // Shape B: the globe's wireframe (matches the language sphere).
   const globe = new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(GLOBE_RADIUS, 2));
   const b = samplePointsOnEdges(globe, count, 0.04);
 
@@ -111,7 +98,6 @@ export function createMorph({ heroEl, sphereEl, canvasEl }) {
   geo.setAttribute('aA', new THREE.BufferAttribute(a, 3));
   geo.setAttribute('aB', new THREE.BufferAttribute(b, 3));
   geo.setAttribute('aRand', new THREE.BufferAttribute(rand, 1));
-  // Three needs a `position` attribute to draw; the shader ignores it.
   geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
 
   const uniforms = {
@@ -151,7 +137,6 @@ export function createMorph({ heroEl, sphereEl, canvasEl }) {
   };
   resize();
 
-  /** Scroll progress: starts as you leave the hero, ends when the globe is in view. */
   function progress() {
     const vh = window.innerHeight;
     const start = heroEl.offsetTop + vh * 0.12;
@@ -162,7 +147,6 @@ export function createMorph({ heroEl, sphereEl, canvasEl }) {
   }
 
   function updateTargets() {
-    // Crystal: ask the hero scene; fall back to the hero's right side.
     const c = morphState.heroCrystal?.();
     if (c) {
       uniforms.uA.value.set(c.x, c.y, c.pxPerUnit, c.depth);
@@ -171,7 +155,6 @@ export function createMorph({ heroEl, sphereEl, canvasEl }) {
       const hr = heroEl.getBoundingClientRect();
       uniforms.uA.value.set(hr.left + hr.width * 0.72, hr.top + hr.height * 0.5, hr.height / 8, 9);
     }
-    // Globe: same camera math as the language scene.
     const r = canvasEl.getBoundingClientRect();
     const camZ = languageCameraZ(r.width / Math.max(1, r.height));
     const visibleH = 2 * Math.tan(THREE.MathUtils.degToRad(LANG_FOV / 2)) * camZ;
@@ -179,7 +162,6 @@ export function createMorph({ heroEl, sphereEl, canvasEl }) {
     if (morphState.globeRotation) uniforms.uRotB.value.set(morphState.globeRotation.y, morphState.globeRotation.x);
   }
 
-  // Render only while the morph is mid-flight; otherwise sit idle.
   let raf = 0;
   let shown = false;
   let last = performance.now();
