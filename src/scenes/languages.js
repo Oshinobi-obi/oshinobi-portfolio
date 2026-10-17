@@ -1,6 +1,3 @@
-// Languages: an interactive 3D tag sphere. Each language is a label sprite
-// on a Fibonacci sphere, tethered to a wireframe globe; label size scales
-// with its share of bytes. Drag to spin (with inertia), hover for details.
 import * as THREE from 'three';
 import { env } from '../lib/env.js';
 import { createSceneBase, softDotTexture } from './base.js';
@@ -20,10 +17,8 @@ export async function createScene(container, { data, tooltip }) {
   const world = new THREE.Group();
   world.rotation.set(0.35, 0.6, 0);
   scene.add(world);
-  // The scroll morph aims its particles using this rotation.
   morphState.globeRotation = world.rotation;
 
-  // Globe
   const globe = new THREE.LineSegments(
     new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(GLOBE_RADIUS, 2)),
     new THREE.LineBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.22 })
@@ -44,7 +39,6 @@ export async function createScene(container, { data, tooltip }) {
   world.add(tethers);
 
   const fit = () => {
-    // Pull the camera back on narrow canvases so labels never clip.
     camera.position.z = languageCameraZ(base.width / Math.max(1, base.height));
   };
   base.onResize(fit);
@@ -57,7 +51,6 @@ export async function createScene(container, { data, tooltip }) {
     const golden = Math.PI * (3 - Math.sqrt(5));
 
     list.forEach((lang, i) => {
-      // Fibonacci sphere point
       const y = n === 1 ? 0 : 1 - (i / (n - 1)) * 2;
       const r = Math.sqrt(1 - y * y);
       const theta = golden * i;
@@ -75,7 +68,6 @@ export async function createScene(container, { data, tooltip }) {
       world.add(sprite);
       tags.push(sprite);
 
-      // Tether from globe surface to label
       const from = p.clone().setLength(1.45);
       const lineGeo = new THREE.BufferGeometry().setFromPoints([from, p.clone().multiplyScalar(0.94)]);
       const c = new THREE.Color(color).lerp(CYAN, 0.5);
@@ -93,7 +85,6 @@ export async function createScene(container, { data, tooltip }) {
     base.renderOnce();
   }
 
-  // ── Interaction: drag with inertia + hover raycast ──
   const el = renderer.domElement;
   el.style.touchAction = 'pan-y';
   el.style.cursor = 'grab';
@@ -124,7 +115,6 @@ export async function createScene(container, { data, tooltip }) {
     if (dragging && last) {
       const dx = e.clientX - last.x;
       const dy = e.clientY - last.y;
-      // Horizontal drag only on touch, so vertical swipes still scroll the page.
       vel.set(dy * 0.005 * (e.pointerType === 'mouse' ? 1 : 0), dx * 0.005);
       world.rotation.y += vel.y;
       world.rotation.x += vel.x;
@@ -182,8 +172,6 @@ export async function createScene(container, { data, tooltip }) {
     }
     globe.rotation.y -= calm ? 0 : dt * 0.1;
 
-    // Re-form as the scroll-morph particles arrive: the globe grows into
-    // place, then the language tags fade in.
     const p = morphState.enabled ? morphState.progress : 1;
     const formGlobe = smoothstep(0.7, 1, p);
     const formTags = smoothstep(0.86, 1, p);
@@ -194,7 +182,6 @@ export async function createScene(container, { data, tooltip }) {
     tethers.visible = formTags > 0.01;
     for (const t of tethers.children) t.material.opacity = t.userData.baseOpacity * formTags;
 
-    // Depth cue: fade/shrink labels on the far side; grow hovered one.
     for (const s of tags) {
       s.getWorldPosition(tmp);
       const depth = (tmp.z + RADIUS) / (RADIUS * 2); // 0 back → 1 front
@@ -207,15 +194,12 @@ export async function createScene(container, { data, tooltip }) {
     }
   });
 
-  // Build labels once data arrives (sphere already renders meanwhile).
   data
     ?.then(async (d) => {
-      // Labels are drawn to canvas, so wait for the web fonts first.
       await document.fonts?.ready;
       buildTags(d.languages);
     })
     .catch(() => {
-      /* list below shows the error; globe stays as decoration */
     });
 
   return base;
@@ -239,7 +223,6 @@ function labelTexture(lang, color) {
   c.width = w;
   c.height = h;
 
-  // Pill background
   const r = h / 2;
   ctx.beginPath();
   ctx.roundRect(2, 2, w - 4, h - 4, r - 2);
@@ -252,7 +235,6 @@ function labelTexture(lang, color) {
   ctx.strokeStyle = grad;
   ctx.stroke();
 
-  // Language color dot
   let x = padX + dotR;
   ctx.beginPath();
   ctx.arc(x, h / 2, dotR, 0, Math.PI * 2);
