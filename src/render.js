@@ -1,4 +1,3 @@
-// Builds every section's markup from src/data/profile.js.
 import { profile } from './data/profile.js';
 import { esc } from './lib/util.js';
 
@@ -23,7 +22,6 @@ function photoUrl() {
 export function renderAll() {
   document.querySelectorAll('[data-name]').forEach((el) => (el.textContent = profile.name));
 
-  // ── Hero ──
   document.querySelector('[data-hero-content]').innerHTML = `
     <p class="hero__eyebrow" data-hero-item><span class="dot"></span> ${esc(profile.role)}</p>
     <h1 class="hero__title" data-hero-item>
@@ -36,7 +34,6 @@ export function renderAll() {
       <a class="btn btn--ghost" href="${esc(profile.githubUrl)}" target="_blank" rel="noopener">${GH_ICON} GitHub</a>
     </div>`;
 
-  // ── About ──
   const initials = profile.name.slice(0, 2).toUpperCase();
   const photo = photoUrl();
   document.querySelector('[data-about]').innerHTML = `
@@ -71,7 +68,6 @@ export function renderAll() {
       </div>
     </div>`;
 
-  // ── Languages & Tech ──
   document.querySelector('[data-tech]').innerHTML = `
     ${sectionHead('02', 'tech-title', 'Languages &amp; Tech', `Live from GitHub — bytes of code per language across my public repositories.`)}
     <div class="tech__grid">
@@ -92,14 +88,12 @@ export function renderAll() {
       </div>
     </div>`;
 
-  // ── Featured projects ──
   document.querySelector('[data-projects]').innerHTML = `
     ${sectionHead('03', 'projects-title', 'Featured Projects', 'Systems built for real offices, barangays, and classmates.')}
     <div class="projects">
       ${profile.projects.map(projectCard).join('')}
     </div>`;
 
-  // ── Gallery (the carousel itself is built by lib/gallery.js) ──
   document.querySelector('[data-gallery]').innerHTML = sectionHead(
     '04',
     'gallery-title',
@@ -107,7 +101,6 @@ export function renderAll() {
     "A closer look at the systems I'm proudest of. Drag, swipe, or use the arrows — click a screenshot to enlarge it."
   );
 
-  // ── Repos ──
   document.querySelector('[data-repos]').innerHTML = `
     ${sectionHead('05', 'repos-title', 'All Public Repos', 'Auto-populated from the GitHub API, most recently updated first.')}
     <div class="repos" data-repo-grid aria-live="polite">
@@ -117,7 +110,6 @@ export function renderAll() {
       <a class="btn btn--ghost" href="${esc(profile.githubUrl)}?tab=repositories" target="_blank" rel="noopener">${GH_ICON} See everything on GitHub</a>
     </p>`;
 
-  // ── Contact / footer ──
   document.querySelector('[data-contact]').innerHTML = `
     ${sectionHead('06', 'contact-title', "Let's build something", 'Have a project, a role, or a community problem worth solving? Reach out.')}
     <ul class="contact" data-reveal>
