@@ -38,7 +38,7 @@ export const profile = {
 
   projects: [
     {
-      title: 'AMS StockWatch',
+      title: 'AMS Admin',
       kicker: 'DepEd NCR · Asset Management Section',
       description:
         'Shopee-inspired supply requisition & inventory portal for DepEd NCR\'s Asset Management Section, used by 22 office/unit accounts.',
