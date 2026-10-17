@@ -1,9 +1,5 @@
 import { env } from './env.js';
 
-/**
- * 3D tilt with a light-follow glare. Children with class `.layer` and a
- * `--z` custom property are pushed forward with translateZ for depth.
- */
 export function initTilt(root = document) {
   root.querySelectorAll('[data-tilt]').forEach((card) => {
     if (card.dataset.tiltReady) return;
