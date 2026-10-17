@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/oshinobi-portfolio/',
+  base: './',
   build: {
     target: 'es2020',
     chunkSizeWarningLimit: 800,
