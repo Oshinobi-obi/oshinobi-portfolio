@@ -1,10 +1,3 @@
-/**
- * Lazy-load a Three.js scene when its container nears the viewport, and
- * pause/resume rendering as it scrolls out of / into view.
- *
- * `loader` is a function returning a dynamic import, so three.js is split
- * into its own chunk and only downloaded when first needed.
- */
 export function lazyScene(container, loader, options = {}) {
   let scene = null;
   let loading = false;
@@ -32,7 +25,6 @@ export function lazyScene(container, loader, options = {}) {
   );
   io.observe(container);
 
-  // Stop rendering when the tab is hidden.
   document.addEventListener('visibilitychange', () => {
     if (!scene) return;
     document.hidden ? scene.stop() : visible && scene.start();
