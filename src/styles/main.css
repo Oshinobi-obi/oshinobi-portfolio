@@ -1,4 +1,3 @@
-/* ───────────────────────── Tokens ───────────────────────── */
 :root {
   --bg: #05060f;
   --bg-2: #0a0d1f;
@@ -21,7 +20,6 @@
   color-scheme: dark;
 }
 
-/* ───────────────────────── Base ───────────────────────── */
 *,
 *::before,
 *::after {
@@ -49,7 +47,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 body::before {
-  /* Faint perspective grid */
   content: '';
   position: fixed;
   inset: 0;
@@ -143,7 +140,6 @@ p {
   text-align: center;
 }
 
-/* ───────────────────────── Buttons ───────────────────────── */
 .btn {
   --pad: 14px 22px;
   display: inline-flex;
@@ -187,7 +183,6 @@ p {
   transform: translateY(-2px);
 }
 
-/* ───────────────────────── Cursor glow ───────────────────────── */
 .cursor-glow {
   position: fixed;
   top: 0;
@@ -213,7 +208,6 @@ p {
   height: 520px;
 }
 
-/* Scroll-morph particles (crystal → globe): above content, never clickable */
 .morph-layer {
   position: fixed;
   inset: 0;
@@ -223,7 +217,6 @@ p {
   z-index: 2;
 }
 
-/* ───────────────────────── Nav ───────────────────────── */
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
@@ -342,7 +335,6 @@ p {
   }
 }
 
-/* ───────────────────────── Hero ───────────────────────── */
 .hero {
   position: relative;
   min-height: 100vh;
@@ -367,7 +359,6 @@ p {
 .hero__canvas.is-ready canvas {
   opacity: 1;
 }
-/* CSS-only fallback: shown until WebGL is ready, or forever without WebGL */
 .hero__fallback {
   position: absolute;
   top: 50%;
@@ -401,7 +392,6 @@ p {
   }
 }
 .hero::after {
-  /* Fade into the next section */
   content: '';
   position: absolute;
   inset: auto 0 0 0;
@@ -505,12 +495,9 @@ p {
   }
 }
 
-/* ───────────────────────── Sections ───────────────────────── */
 .section {
   position: relative;
   padding: clamp(80px, 12vw, 140px) 0;
-  /* translateZ'd card layers are scaled by perspective; clip (unlike hidden)
-     keeps 3D intact while stopping them from widening the mobile viewport */
   overflow-x: clip;
 }
 .section__head {
@@ -566,7 +553,6 @@ p {
   background: rgba(14, 18, 48, 0.4);
 }
 
-/* ───────────────────────── Tilt (shared) ───────────────────────── */
 .tilt {
   --rx: 0deg;
   --ry: 0deg;
@@ -606,7 +592,6 @@ p {
   opacity: 1;
 }
 
-/* ───────────────────────── About ───────────────────────── */
 .about__grid {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
@@ -762,7 +747,6 @@ p {
   }
 }
 
-/* ───────────────────────── Tech ───────────────────────── */
 .tech__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
@@ -789,7 +773,6 @@ p {
   display: block;
 }
 .tech__sphere::before {
-  /* Static fallback graphic when WebGL isn't available */
   content: '';
   position: absolute;
   inset: 22%;
@@ -990,7 +973,6 @@ p {
   }
 }
 
-/* ───────────────────────── Projects ───────────────────────── */
 .projects {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1146,7 +1128,6 @@ p {
   }
 }
 
-/* ───────────────────────── Repos ───────────────────────── */
 .repos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
@@ -1234,7 +1215,6 @@ p {
   text-align: center;
 }
 
-/* ───────────────────────── Contact / Footer ───────────────────────── */
 .footer {
   padding-bottom: 40px;
   border-top: 1px solid var(--border);
@@ -1329,10 +1309,7 @@ p {
   gap: 8px;
 }
 
-/* ───────────────────────── Gallery ───────────────────────── */
 .gallery {
-  /* Slide width: also capped by viewport height so filters, slides and
-     controls fit on one screen. */
   --gw: min(54vw, 680px, calc((100vh - 340px) * 1.6));
 }
 .gallery.has-sub {
@@ -1372,7 +1349,6 @@ p {
   border-color: transparent;
   box-shadow: 0 8px 24px -10px rgba(34, 211, 238, 0.7);
 }
-/* Second row: feature flows within a project */
 .gallery__subfilters {
   position: relative;
   display: flex;
@@ -1560,7 +1536,6 @@ p {
     0 30px 80px -40px rgba(167, 139, 250, 0.7);
 }
 .gslide:not(.is-active) .gslide__frame::after {
-  /* Dim slides that aren't in front */
   content: '';
   position: absolute;
   inset: 0;
@@ -1758,7 +1733,6 @@ p {
     perspective: 1000px;
   }
   .gallery__filters {
-    /* One swipeable row instead of four wrapped rows */
     flex-wrap: nowrap;
     justify-content: flex-start;
     overflow-x: auto;
@@ -1792,7 +1766,6 @@ p {
   }
 }
 
-/* Lightbox */
 .lightbox {
   width: min(1200px, 94vw);
   max-width: none;
@@ -1879,9 +1852,6 @@ p {
   }
 }
 
-/* ───────────────────────── Reduced motion ─────────────────────────
-   JS adds .reduced-motion to <html> when the OS setting is on (or with
-   ?reducedmotion in the URL); the media query covers the no-JS case. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
