@@ -1,39 +1,27 @@
-/**
- * ─────────────────────────────────────────────────────────────
- *  PERSONAL CONTENT — edit this file to change the site's text.
- *  Components read everything from here; you never need to touch
- *  the rendering code to update copy, links, or projects.
- * ─────────────────────────────────────────────────────────────
- */
-
 export const profile = {
   name: 'Oshinobi',
   role: 'Software Developer · BSIT Graduate',
   tagline: 'Building software that serves communities',
   location: 'Quezon City, PH',
 
-  // GitHub username used for all API calls (repos + languages).
   githubUser: 'Oshinobi-obi',
   githubUrl: 'https://github.com/Oshinobi-obi',
 
-  // File name of your photo inside /public (e.g. 'me.jpg'). Leave empty to
-  // show the placeholder card.
   photo: '',
 
   about: [
     "I'm a BSIT graduate of Quezon City University (QCU) who builds apps, web tools, and community-focused technology.",
-    "I'm currently a DOLE GIP intern at the DepEd NCR Regional Office — where I also did my OJT — building internal systems that real offices rely on every day.",
+    "I'm currently a DOLE GIP intern at the DepEd NCR Regional Office - where I also did my OJT - building internal systems that real offices rely on every day.",
     'I like software that quietly makes someone\'s day easier: a supply request that takes seconds instead of paperwork, a safety alert that reaches a barangay in real time.',
   ],
 
   facts: [
-    { label: 'Education', value: 'BSIT — Quezon City University' },
-    { label: 'Internship', value: 'DOLE GIP — DepEd NCR Regional Office' },
-    { label: 'Previously', value: 'OJT — DepEd NCR Regional Office' },
+    { label: 'Education', value: 'BSIT - Quezon City University' },
+    { label: 'Internship', value: 'DOLE GIP - DepEd NCR Regional Office' },
+    { label: 'Previously', value: 'OJT - DepEd NCR Regional Office' },
     { label: 'Location', value: 'Quezon City, PH' },
   ],
 
-  // Tools shown under "Languages & Tech" (independent of GitHub data).
   tools: [
     'C#',
     'Blazor',
@@ -48,9 +36,6 @@ export const profile = {
     'MySQL Workbench',
   ],
 
-  // Hand-written featured project cards.
-  // `repo` is "owner/name" (or empty to hide the code link).
-  // `gallery` (optional) is a gallery folder name; adds a "Screenshots" button.
   projects: [
     {
       title: 'AMS StockWatch',
@@ -102,18 +87,6 @@ export const profile = {
     },
   ],
 
-  // ── Project gallery ─────────────────────────────────────────
-  // Screenshots are picked up automatically: drop image files (png, jpg,
-  // webp, avif, gif) into src/assets/gallery/<folder>/ and they appear in
-  // filename order. Name them like '01-dashboard.png' — the caption becomes
-  // "Dashboard". Override any caption via `captions`, keyed by file name,
-  // e.g. captions: { '01-dashboard.png': 'Admin dashboard with live stock' }.
-  // A folder with no images shows a "coming soon" slide.
-  //
-  // Bigger projects can be split into feature flows: put screenshots in
-  // subfolders (gallery/<folder>/<flow>/001.jpg …) and an animated demo per
-  // flow in gallery/<folder>/gifs/<flow>.gif (or .mp4/.webm). Flows get their
-  // own filter chips; list them under `categories` to set labels and order.
   gallery: [
     {
       folder: 'ams-shopee',
@@ -121,7 +94,6 @@ export const profile = {
       subtitle: 'Requisition portal · office side',
       repo: 'Oshinobi-obi/AMS_Shopee',
       captions: {},
-      // Each flow folder holds its steps plus its demo GIF.
       categories: [
         { folder: '01-login-and-browse', label: 'Log in & browse catalog' },
         { folder: '02-request-supplies', label: 'Request supplies' },
@@ -164,7 +136,6 @@ export const profile = {
       title: 'Dat2DTR',
       subtitle: 'Biometrics .dat → Daily Time Record',
       repo: 'Oshinobi-obi/Dat2DTR',
-      // Captions come from file names; these tidy up the ones that read oddly.
       captions: {
         'gifs/2-edit-dtr-fix-missing-scan.gif': 'Edit a DTR and fix a missing scan',
         'gifs/3-file-leave-and-computation.gif': 'File a leave and see the computation',
@@ -174,8 +145,6 @@ export const profile = {
         'DAT2DTR/15-saved-pdf-computation-of-leaves.png': 'Saved PDF — computation of leaves',
         'DAT2DTR/16-saved-excel-dtr-sheet.png': 'Saved Excel DTR sheet',
       },
-      // The 4 GIFs in gifs/ don't match a folder, so they show as standalone
-      // live demos in the Overview; the screenshots live under "All screens".
       categories: [{ folder: 'DAT2DTR', label: 'All screens' }],
     },
     {
@@ -184,8 +153,6 @@ export const profile = {
       subtitle: 'Admin & trainer side · events, certificates, support',
       repo: 'Oshinobi-obi/StemHub',
       captions: {},
-      // Feature flows = subfolders. This sets their order, chip label, and the
-      // role tag shown on the chip. Each flow's demo is gifs/<folder>.gif.
       categories: [
         { folder: 'admin-verify-nsef-team', label: 'Verify NSEF Teams', role: 'Admin' },
         { folder: 'admin-event-to-certificate', label: 'Events → Certificates', role: 'Admin' },
@@ -206,11 +173,8 @@ export const profile = {
     },
   ],
 
-  // Repos to leave out of the "All Public Repos" grid (forks are always hidden).
   hiddenRepos: ['Oshinobi-obi'],
 
-  // ── Contact ─────────────────────────────────────────────────
-  // TODO: replace the placeholder values below with your real links.
   contact: [
     { label: 'Email', value: 'Intertas, Mico D.', href: 'mailto:intertas.mico.dichoso@gmail.com'},
       { label: 'LinkedIn', value: 'Mico Intertas', href: 'https://www.linkedin.com/in/intertasmicodichoso'},
