@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oshinobi — Developer Portfolio</title>
+    <meta name="description" content="Oshinobi — BSIT graduate from Quezon City University building apps, web tools, and community-focused technology." />
+    <meta name="theme-color" content="#05060f" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="cursor-glow" aria-hidden="true"></div>
+
+    <header class="nav" id="nav">
+      <a class="nav__brand" href="#top" data-brand>
+        <span class="nav__logo" aria-hidden="true"></span>
+        <span data-name></span>
+      </a>
+      <button class="nav__toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <nav id="nav-links" class="nav__links" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#tech">Tech</a>
+        <a href="#projects">Projects</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#repos">Repos</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <!-- 1. HERO -->
+      <section class="hero" id="top" aria-label="Introduction">
+        <div class="hero__canvas" data-scene="hero" aria-hidden="true">
+          <div class="hero__fallback"></div>
+        </div>
+        <div class="hero__content container" data-hero-content></div>
+        <a class="hero__scroll" href="#about" aria-label="Scroll to About section">
+          <span></span>
+        </a>
+      </section>
+
+      <!-- 2. ABOUT -->
+      <section class="section" id="about" aria-labelledby="about-title">
+        <div class="container about" data-about></div>
+      </section>
+
+      <!-- 3. LANGUAGES & TECH -->
+      <section class="section" id="tech" aria-labelledby="tech-title">
+        <div class="container" data-tech></div>
+      </section>
+
+      <!-- 4. FEATURED PROJECTS -->
+      <section class="section" id="projects" aria-labelledby="projects-title">
+        <div class="container" data-projects></div>
+      </section>
+
+      <!-- 5. PROJECT GALLERY -->
+      <section class="section" id="gallery" aria-labelledby="gallery-title">
+        <div class="container" data-gallery></div>
+      </section>
+
+      <!-- 6. ALL REPOS -->
+      <section class="section" id="repos" aria-labelledby="repos-title">
+        <div class="container" data-repos></div>
+      </section>
+    </main>
+
+    <!-- 7. CONTACT / FOOTER -->
+    <footer class="section footer" id="contact" aria-labelledby="contact-title">
+      <div class="container" data-contact></div>
+    </footer>
+
+    <noscript>
+      <p class="noscript">This portfolio needs JavaScript to load its content. Visit <a href="https://github.com/Oshinobi-obi">github.com/Oshinobi-obi</a>.</p>
+    </noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
