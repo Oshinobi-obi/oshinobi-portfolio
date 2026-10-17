@@ -1,14 +1,3 @@
-// Project gallery: a 3D coverflow carousel (CSS 3D, so screenshots stay
-// crisp) with project + category filters, drag/swipe, keyboard control, and
-// a lightbox. Media is discovered automatically from src/assets/gallery/:
-//
-//   gallery/<project>/<file>                    plain screenshots
-//   gallery/<project>/<category>/<file>         screenshots grouped by flow
-//   gallery/<project>/gifs/<category>.gif       animated demo for that flow
-//
-// Demos (GIF, MP4 or WebM) live in a `gifs/` (or `demos/`) folder and are
-// matched to a category by file name. Only slides near the front load their
-// media, so big GIFs don't all download at once.
 import { profile } from '../data/profile.js';
 import { env } from './env.js';
 import { esc } from './util.js';
@@ -22,8 +11,7 @@ const files = import.meta.glob('../assets/gallery/**/*.{png,jpg,jpeg,webp,avif,g
 
 const DEMO_FOLDERS = ['gifs', 'demos', 'videos'];
 const ACRONYMS = ['nsef', 'ams', 'dtr', 'ui', 'api', 'qr', 'pdf', 'rfid', 'ble', 'gps', 'cto', 'ris', 'rsmi', 'splv', 'sphv', 'cse'];
-// "All" shows at most this many slides per project, so one big project
-// doesn't drown the rest. Pick a project chip to see everything.
+
 const ALL_PER_PROJECT = 4;
 
 const ARROW_L = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -31,7 +19,6 @@ const ARROW_R = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="tr
 const CLOSE = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 const PLAY = `<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M7 5v14l12-7z" fill="currentColor"/></svg>`;
 
-/** "admin-verify-nsef-team" → "Admin verify NSEF team" */
 function humanize(name) {
   const words = name.replace(/\.[^.]+$/, '').replace(/^[\d\s._-]+/, '').split(/[-_\s]+/).filter(Boolean);
   const out = words
@@ -48,7 +35,6 @@ const isVideo = (file) => /\.(mp4|webm)$/i.test(file);
 const isAnimated = (file) => /\.(gif|mp4|webm)$/i.test(file);
 const stripNumber = (name) => name.replace(/\.[^.]+$/, '').replace(/^[\d\s._-]+/, '').toLowerCase();
 
-/** Group discovered files into { [project]: { root: [], categories: Map, demos: Map } }. */
 function scan() {
   const collator = new Intl.Collator(undefined, { numeric: true });
   const byProject = {};
@@ -68,8 +54,6 @@ function scan() {
   for (const p of Object.values(byProject)) {
     p.root.sort((a, b) => collator.compare(a.file, b.file));
     p.categories.forEach((list) => list.sort((a, b) => collator.compare(a.file, b.file)));
-    // A GIF/video inside a flow folder is that flow's demo (preferring the one
-    // named after the folder), unless gifs/ already supplied one.
     p.categories.forEach((list, name) => {
       const animated = list.filter((i) => isAnimated(i.file));
       if (!animated.length || p.demos.has(name)) return;
@@ -77,25 +61,21 @@ function scan() {
       list.splice(list.indexOf(demo), 1);
       p.demos.set(name, demo);
     });
-    // Unconfigured flow folders show in name order (01-…, 02-…).
     p.categories = new Map([...p.categories.entries()].sort(([a], [b]) => collator.compare(a, b)));
   }
   return byProject;
 }
 
-/** Build each project's ordered categories (config order first, then any extra folders). */
 function buildModel() {
   const found = scan();
   return profile.gallery.map((project) => {
     const f = found[project.folder] || { root: [], categories: new Map(), demos: new Map() };
     const configured = project.categories || [];
-    // Categories are screenshot subfolders (plus configured flows that only have a demo).
     const names = [
       ...configured.map((c) => c.folder).filter((n) => f.categories.has(n) || f.demos.has(n)),
       ...[...f.categories.keys()].filter((n) => !configured.some((c) => c.folder === n)),
     ].filter((n, i, arr) => arr.indexOf(n) === i);
 
-    // Demos that don't match any category stand alone as overview slides.
     const collator = new Intl.Collator(undefined, { numeric: true });
     const looseDemos = [...f.demos.entries()]
       .filter(([name]) => !names.includes(name))
@@ -142,8 +122,6 @@ function slidesFor(model, projectFolder, categoryFolder) {
       }
       continue;
     }
-    // Overview: standalone demos first, then one cover per category
-    // (its demo, or its first screenshot).
     project.looseDemos.forEach((d) => out.push({ project, category: null, ...d }));
     for (const c of cats) {
       const cover = c.demo || c.steps[0];
@@ -247,13 +225,11 @@ export function initGallery() {
   function renderSubfilters() {
     const p = model.find((x) => x.folder === project);
     const cats = p?.categories || [];
-    // Show the flow row when there's more than one thing to switch between.
     subfilters.hidden = cats.length + (p?.looseDemos.length ? 1 : 0) < 2;
     root.querySelector('.gallery').classList.toggle('has-sub', !subfilters.hidden);
     if (subfilters.hidden) return;
     const chip = (folder, label) =>
       `<button class="gchip gchip--sub${category === folder ? ' is-active' : ''}" data-category="${esc(folder)}" aria-pressed="${category === folder}">${esc(label)}</button>`;
-    // Consecutive flows with the same tag share one group label.
     const groups = [];
     for (const c of cats) {
       const last = groups[groups.length - 1];
@@ -275,7 +251,6 @@ export function initGallery() {
     slides = slidesFor(model, project, category);
     active = Math.min(active, Math.max(0, slides.length - 1));
     renderSubfilters();
-    // Slides shrink by the flow row's real height so everything fits on screen.
     root.querySelector('.gallery').style.setProperty('--sub-h', `${subfilters.hidden ? 0 : subfilters.offsetHeight}px`);
     track.innerHTML = slides.map(slideHTML).join('');
     dots.innerHTML = slides.map((_, i) => `<span data-dot="${i}"></span>`).join('');
@@ -292,7 +267,6 @@ export function initGallery() {
     });
   }
 
-  /** Load media only for slides near the front; play/pause videos. */
   function hydrate(el, distance) {
     const media = el.querySelector('[data-src]');
     if (media && distance <= 2 && !media.getAttribute('src')) media.src = media.dataset.src;
@@ -302,7 +276,6 @@ export function initGallery() {
     }
   }
 
-  /** Position every slide around the active one (coverflow). */
   function layout() {
     const w = track.firstElementChild?.offsetWidth || 600;
     const small = window.innerWidth < 640;
@@ -365,7 +338,6 @@ export function initGallery() {
       b.setAttribute('aria-pressed', String(on));
     });
     render();
-    // Keep the chosen chips visible in the swipeable rows on phones.
     for (const row of [root.querySelector('.gallery__filters'), subfilters]) {
       const chip = row.querySelector('.is-active');
       if (chip && row.scrollWidth > row.clientWidth) {
@@ -374,7 +346,6 @@ export function initGallery() {
     }
   }
 
-  // ── Lightbox ──
   function showInLightbox() {
     const s = slides[active];
     if (!s || s.placeholder) return dialog.open && dialog.close();
@@ -413,7 +384,6 @@ export function initGallery() {
     track.children[active]?.focus({ preventScroll: true });
   });
 
-  // ── Controls ──
   root.querySelector('[data-prev]').addEventListener('click', () => go(active - 1));
   root.querySelector('[data-next]').addEventListener('click', () => go(active + 1));
   root.querySelector('.gallery__filters').addEventListener('click', (e) => {
@@ -435,7 +405,6 @@ export function initGallery() {
     if (e.key === 'End') (e.preventDefault(), go(slides.length - 1, true));
   });
 
-  // Click a side slide to bring it forward; click the front one to enlarge.
   let dragged = false;
   track.addEventListener('click', (e) => {
     const el = e.target.closest('.gslide');
@@ -444,7 +413,6 @@ export function initGallery() {
     i === active ? openLightbox() : go(i);
   });
 
-  // Drag / swipe
   let startX = null;
   stage.addEventListener('pointerdown', (e) => {
     startX = e.clientX;
@@ -467,7 +435,6 @@ export function initGallery() {
     resetTilt();
   });
 
-  // Front slide leans toward the mouse, with a moving light sheen.
   function tiltActive(e) {
     if (env.reducedMotion || e.pointerType !== 'mouse') return;
     const el = track.children[active];
@@ -489,7 +456,6 @@ export function initGallery() {
     });
   }
 
-  // "Screenshots" buttons on featured project cards jump here, pre-filtered.
   document.addEventListener('click', (e) => {
     const link = e.target.closest('[data-gallery-link]');
     if (link) setFilter(link.dataset.galleryLink);
