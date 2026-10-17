@@ -90,7 +90,7 @@ export const profile = {
   gallery: [
     {
       folder: 'ams-shopee',
-      title: 'AMS StockWatch',
+      title: 'Asset Shop',
       subtitle: 'Requisition portal · office side',
       repo: 'Oshinobi-obi/AMS_Shopee',
       captions: {},
@@ -108,7 +108,7 @@ export const profile = {
     },
     {
       folder: 'ams-admin',
-      title: 'AMS StockWatch Admin',
+      title: 'AMS Admin',
       subtitle: 'Storage & report system · admin side',
       repo: 'Oshinobi-obi/AMS_Storage_and_Report_System',
       captions: {},
