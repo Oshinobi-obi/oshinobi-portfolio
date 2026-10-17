@@ -1,9 +1,5 @@
-// GitHub REST API access with a 1-hour localStorage cache.
-// Unauthenticated requests are limited to 60/hour per IP, so every response
-// is cached and stale data is reused if a later request fails.
-
 const API = 'https://api.github.com';
-const TTL = 60 * 60 * 1000; // 1 hour
+const TTL = 60 * 60 * 1000;
 const CACHE_VERSION = 'v1';
 
 function readCache(key) {
@@ -19,11 +15,9 @@ function writeCache(key, data) {
   try {
     localStorage.setItem(key, JSON.stringify({ t: Date.now(), data }));
   } catch {
-    /* storage full or blocked (private mode) — safe to ignore */
   }
 }
 
-/** Return cached data if fresh, else fetch; fall back to stale cache on error. */
 async function cached(key, fetcher, shouldCache = () => true) {
   const fullKey = `gh:${CACHE_VERSION}:${key}`;
   const hit = readCache(fullKey);
@@ -47,11 +41,9 @@ async function getJSON(url) {
   return res.json();
 }
 
-/** All public, non-fork repos, most recently updated first. */
 export async function getRepos(user, hidden = []) {
   const raw = await cached(`repos:${user}`, async () => {
     const list = await getJSON(`${API}/users/${encodeURIComponent(user)}/repos?per_page=100`);
-    // Keep only the fields we render to keep the cache small.
     return list.map((r) => ({
       name: r.name,
       full_name: r.full_name,
@@ -73,7 +65,6 @@ export async function getRepos(user, hidden = []) {
     .sort((a, b) => new Date(b.pushed_at || b.updated_at) - new Date(a.pushed_at || a.updated_at));
 }
 
-/** Run async tasks with limited concurrency. */
 async function pool(items, limit, fn) {
   const out = new Array(items.length);
   let i = 0;
@@ -87,12 +78,6 @@ async function pool(items, limit, fn) {
   return out;
 }
 
-/**
- * Sum bytes per language across repos.
- * Returns { languages: [{ name, bytes, percent }], total, approximate }.
- * If the per-repo language endpoint is rate-limited, falls back to each
- * repo's primary language weighted by repo size (marked `approximate`).
- */
 export async function getLanguageStats(user, repos) {
   const key = `langs:${user}:${repos.map((r) => r.name).join(',')}`;
   return cached(key, async () => {
