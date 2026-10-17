@@ -1,6 +1,3 @@
-// Hero: a low-poly crystal wrapped in wireframe + orbiting code cubes,
-// inside a particle field that parallaxes with the mouse. A bloom pass makes
-// the neon edges glow, and the crystal dissolves as the scroll morph starts.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -13,7 +10,6 @@ import { HERO_CAMERA_Z, HERO_FOV, makeCrystalGeometry } from './shared.js';
 
 const CYAN = new THREE.Color('#22d3ee');
 const VIOLET = new THREE.Color('#a78bfa');
-// Neon glow strength (UnrealBloomPass). Raise for more glow, lower for subtler.
 const BLOOM_DESKTOP = 0.7;
 const BLOOM_MOBILE = 0.55;
 
@@ -22,22 +18,15 @@ export function createScene(container) {
   const BLOOM = small ? BLOOM_MOBILE : BLOOM_DESKTOP;
   const base = createSceneBase(container, { fov: HERO_FOV, z: HERO_CAMERA_Z });
   const { scene, camera, renderer } = base;
-
-  // ── Lights ──
   scene.add(new THREE.AmbientLight('#4c5a9a', 0.6));
   const keyLight = new THREE.PointLight(CYAN, 60, 30);
   keyLight.position.set(4, 3, 5);
   const rimLight = new THREE.PointLight(VIOLET, 70, 30);
   rimLight.position.set(-5, -2, 3);
   scene.add(keyLight, rimLight);
-
-  // ── Crystal cluster ──
   const cluster = new THREE.Group();
   scene.add(cluster);
-
-  // Jittered icosahedron so it reads as a cut gem rather than a ball.
   const crystalGeo = makeCrystalGeometry();
-
   const crystal = new THREE.Mesh(
     crystalGeo,
     new THREE.MeshStandardMaterial({
@@ -66,14 +55,12 @@ export function createScene(container) {
   );
   cluster.add(core);
 
-  // Outer wireframe shell
   const shell = new THREE.LineSegments(
     new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(2.45, 1)),
     new THREE.LineBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.12 })
   );
   cluster.add(shell);
 
-  // Orbit rings
   const ringMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.22 });
   const ring1 = new THREE.Mesh(new THREE.TorusGeometry(2.9, 0.008, 6, 160), ringMat);
   ring1.rotation.x = Math.PI / 2.4;
@@ -84,7 +71,6 @@ export function createScene(container) {
   ring2.rotation.set(Math.PI / 3, Math.PI / 5, 0);
   cluster.add(ring1, ring2);
 
-  // Floating "code cubes" orbiting the crystal
   const cubes = [];
   const cubeGeo = new THREE.BoxGeometry(0.22, 0.22, 0.22);
   const cubeEdges = new THREE.EdgesGeometry(cubeGeo);
@@ -109,13 +95,11 @@ export function createScene(container) {
     cluster.add(g);
   }
 
-  // ── Particle field ──
   const count = small ? 900 : 2200;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const tmp = new THREE.Color();
   for (let i = 0; i < count; i++) {
-    // Spherical shell with denser distribution near the middle.
     const r = 6 + Math.pow(Math.random(), 0.6) * 18;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(2 * Math.random() - 1);
@@ -141,20 +125,17 @@ export function createScene(container) {
       sizeAttenuation: true,
     })
   );
-  // Second, nearer layer moves more for stronger parallax depth.
+  
   const nearParticles = particles.clone();
   nearParticles.scale.setScalar(0.45);
   nearParticles.position.z = 3;
   scene.add(particles, nearParticles);
-
-  // Every material in the cluster, with its resting opacity, so the whole
-  // thing can fade out as it "shatters" into the morph particles.
+  
   const fadeables = [];
   cluster.traverse((o) => {
     if (o.material) fadeables.push({ m: o.material, base: o.material.opacity ?? 1 });
   });
 
-  // ── Layout: crystal sits right of the headline on wide screens ──
   let baseScale = 1;
   const layout = () => {
     cluster.userData.bob = 0;
@@ -171,8 +152,6 @@ export function createScene(container) {
   base.onResize(layout);
   layout();
 
-  // ── Bloom (neon glow) ──
-  // UnrealBloomPass keeps alpha, so the canvas stays transparent over the page.
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(base.width, base.height), BLOOM, 0.5, 0.14);
@@ -186,7 +165,6 @@ export function createScene(container) {
   sizeComposer(base.width, base.height);
   base.setRender(() => composer.render());
 
-  // ── Tell the scroll morph where the crystal is on screen ──
   const worldPos = new THREE.Vector3();
   morphState.heroCrystal = () => {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -204,7 +182,6 @@ export function createScene(container) {
     };
   };
 
-  // ── Pointer parallax ──
   const pointer = new THREE.Vector2();
   const smooth = new THREE.Vector2();
   const onMove = (e) => {
@@ -218,7 +195,6 @@ export function createScene(container) {
 
     smooth.lerp(pointer, calm ? 1 : 0.05);
 
-    // Scroll progress through the hero (0 → 1) pushes the cluster back.
     const scroll = Math.min(1, window.scrollY / Math.max(1, base.height));
 
     if (!calm) {
@@ -251,7 +227,6 @@ export function createScene(container) {
       }
     }
 
-    // Mouse parallax: cluster tilts toward pointer, particle layers drift.
     cluster.rotation.x = smooth.y * 0.25;
     cluster.rotation.y = smooth.x * 0.35;
     particles.position.x = -smooth.x * 0.6;
@@ -263,7 +238,6 @@ export function createScene(container) {
     camera.position.z = 9 + scroll * 3;
     camera.lookAt(0, 0, 0);
 
-    // Crystal dissolves (fades and swells) as the morph particles take over.
     const dissolve = morphState.enabled ? smoothstep(0.0, 0.14, morphState.progress) : 0;
     cluster.scale.setScalar(baseScale * (1 + dissolve * 0.25));
     for (const f of fadeables) f.m.opacity = f.base * (1 - dissolve);
