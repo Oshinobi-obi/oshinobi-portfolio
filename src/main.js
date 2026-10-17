@@ -23,16 +23,13 @@ initTilt();
 initGallery();
 initReveals();
 
-// ── GitHub data (shared by the language sphere, list, and repo grid) ──
 const reposPromise = getRepos(profile.githubUser, profile.hiddenRepos);
 const langsPromise = reposPromise.then((repos) => getLanguageStats(profile.githubUser, repos));
-// Prevent "unhandled rejection" noise; each consumer handles errors itself.
 langsPromise.catch(() => {});
 
 reposPromise.then(renderRepos, renderRepoError);
 langsPromise.then(renderLangList, renderLangError);
 
-// ── 3D scenes (lazy-loaded, paused off-screen) ──
 if (env.webgl) {
   lazyScene(document.querySelector('[data-scene="hero"]'), () => import('./scenes/hero.js'));
   lazyScene(document.querySelector('[data-scene="languages"]'), () => import('./scenes/languages.js'), {
@@ -41,8 +38,6 @@ if (env.webgl) {
   });
 }
 
-// Crystal → globe particle morph on scroll. Skipped for reduced motion; loaded
-// when the browser is idle since it's not needed until the user scrolls.
 if (env.webgl && !env.reducedMotion) {
   const startMorph = () =>
     import('./scenes/morph.js')
@@ -58,13 +53,10 @@ if (env.webgl && !env.reducedMotion) {
   else setTimeout(startMorph, 800);
 }
 
-// Placeholder contact links shouldn't navigate anywhere.
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a[aria-disabled="true"]');
   if (a) e.preventDefault();
 });
-
-// ─────────────────────────────────────────────────────────────
 
 function renderLangList({ languages, approximate }) {
   const list = document.querySelector('[data-lang-list]');
@@ -89,7 +81,6 @@ function renderLangList({ languages, approximate }) {
     </ul>
     ${approximate ? `<p class="muted small">Some per-repo data was rate-limited; percentages are approximate.</p>` : ''}`;
 
-  // Without WebGL, the sphere panel becomes a flat CSS tag cloud.
   if (!env.webgl) {
     const max = languages[0].percent;
     document.querySelector('[data-scene="languages"]').innerHTML = `
@@ -102,7 +93,6 @@ function renderLangList({ languages, approximate }) {
         .join('')}</div>`;
   }
 
-  // Bars grow when the list scrolls into view.
   const io = new IntersectionObserver(
     ([entry]) => {
       if (entry.isIntersecting) {
@@ -175,7 +165,6 @@ function initNav() {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Highlight the section currently in view.
   const map = new Map([...links.querySelectorAll('a')].map((a) => [a.getAttribute('href').slice(1), a]));
   const io = new IntersectionObserver(
     (entries) => {
@@ -187,7 +176,6 @@ function initNav() {
     },
     { rootMargin: '-45% 0px -50% 0px' }
   );
-  // The hero isn't in the menu, so observing it clears the highlight at the top.
   ['top', ...map.keys()].forEach((id) => {
     const el = document.getElementById(id);
     if (el) io.observe(el);
