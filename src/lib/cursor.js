@@ -1,6 +1,5 @@
 import { env } from './env.js';
 
-/** Soft glow that trails the mouse. Desktop (fine pointer) only. */
 export function initCursorGlow() {
   const glow = document.querySelector('.cursor-glow');
   if (!glow || !env.finePointer) {
@@ -14,7 +13,6 @@ export function initCursorGlow() {
   let raf = 0;
 
   const loop = () => {
-    // Ease toward the pointer; reduced motion snaps instantly.
     const k = env.reducedMotion ? 1 : 0.18;
     cx += (x - cx) * k;
     cy += (y - cy) * k;
@@ -35,7 +33,6 @@ export function initCursorGlow() {
   );
   document.addEventListener('pointerleave', () => glow.classList.remove('is-active'));
 
-  // Grow over interactive elements.
   document.addEventListener('pointerover', (e) => {
     glow.classList.toggle('is-hover', !!e.target.closest('a, button, [data-tilt]'));
   });
